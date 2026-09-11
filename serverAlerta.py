@@ -29,5 +29,141 @@ PALAVRAS_ALERTA=[
     "senha",
     "password",
     "dados",
-    "inform"
+    "information"
 ]
+
+def analisar_dados(endereco,dados):
+    ip=endereco[0]
+    porta=endereco[1]
+    try:
+        mensagem=dados.decode()
+    except:
+        mensagem="[os dados não puderam ser decodficados]"
+
+    if ip not in contador_mensagem:
+        contador_mensagem[ip]=0
+    contador_mensagem[ip]+=1
+    quantidade=contador_mensagem[ip]
+    if quantidade>LIMITE_ALTO:
+        nivel="ALTO"
+    elif quantidade>LIMITE_MEDIO:
+        nivel="MÉDIO"
+    else:
+        nivel="NORMAL"
+    
+    print()
+    print(RED + "==================== MONITOR DE REDE ====================" + END)
+    print(
+        WHITE +
+        "IP de origem:" +
+        END,
+        ip
+    )
+
+    print(
+        WHITE +
+        "PORTA de origem:" +
+        END,
+        endereco[1]
+    )
+
+    print(
+        WHITE +
+        "PROTOCOLO:" +
+        END,
+        "TCP"
+    )
+
+    print(
+        WHITE +
+        "TAMANHO:" +
+        END,
+        len(dados),
+        "bytes"
+    )
+
+    print(
+        WHITE +
+        "mensagem deste ip:" +
+        END,
+        quantidade
+    )
+
+    print(
+        WHITE +
+        "NIVEL:" +
+        END,
+        nivel
+    )
+
+    print(
+        WHITE +
+        "conteudo" +
+        END,
+        mensagem
+    )
+
+    print(RED + "==========================================================" + END)
+    
+    if quantidade>LIMITE_ALTO:
+        print()
+        print(RED + "================= ALERTA DE SEGURANÇA ================" + END)
+        print(RED + "            COMPORTAMENTO ANORMAL DETECTADO           " + END)
+        
+        print(
+            WHITE +
+            "IP de origem:" +
+            END,
+            ip
+        )  
+        print(
+            WHITE +
+            "quantidade" +
+            END,
+            quantidade
+        )
+        print(RED + "NÍVEL ALTO" + END)
+        print()
+   
+    elif quantidade>LIMITE_MEDIO:
+        print()
+        print(RED + "================= ALERTA DE SEGURANÇA ================" + END)
+        print(RED + "              MUITAS MENSAGENS RECEBIDAS              " + END)
+        
+        print(
+            WHITE +
+            "IP de origem:" +
+            END,
+            ip
+        )  
+        print(
+            WHITE +
+            "quantidade" +
+            END,
+            quantidade
+        )
+        print(RED + "NÍVEL MEDIO" + END)
+        print()
+    mensagem_minuscula=mensagem.lower()
+    for palavra in PALAVRAS_ALERTA:
+        if palavra in mensagem_minuscula:
+            print()
+            print(RED + "================= ALERTA DE SEGURANÇA ================" + END)
+            print(
+                WHITE +
+                "palavra detectada" +
+                END,
+                palavra
+            )
+            print(
+                WHITE +
+                "IP de origem:" +
+                END,
+                ip
+            )
+            print(
+                WHITE +
+                "mensagem" +
+                END,
+                mensagem
+            )    
