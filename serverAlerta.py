@@ -167,3 +167,67 @@ def analisar_dados(endereco,dados):
                 END,
                 mensagem
             )    
+
+def enviar_para_todos(mensagem):
+    for cliente in clientes:
+        try:
+            cliente.send(mensagem.encode())
+        except:
+            pass
+
+def atender_cliente(conexao,endereco):
+    print()
+    print(
+        GREEN +
+        "      🟢 CONEXÃO RECEBIDA!"
+        + END
+    )
+
+    print(
+        GREEN +
+        "================================"
+        + END
+    )
+
+    print(
+        CYAN +
+        "IP:" +
+        END,
+        endereco[0]
+    )
+
+    print(
+        CYAN +
+        "PORTA:" +
+        END,
+        endereco[1]
+    )
+
+    print()
+
+    while True:
+        try:
+            dados=conexao.recv(1024)
+            if not dados:
+                break
+            analisar_dados(endereco,dados)
+            mensagem = dados.decode()
+            print(f"{endereco[0]}:{mensagem}")
+            mensagem_completa=(f"{endereco[0]}:{mensagem}")
+            enviar_para_todos(mensagem_completa)
+        except:
+            break
+    if conexao in clientes:
+        clientes.remove(conexao)
+    conexao.close()
+    print()
+    print("cliente desconectado: ",endereco[0])
+    print("cliente conectado: ", len(clientes))
+while True: 
+    conexao, endereco = servidor.accept()
+    clientes.append(conexao)
+    print()
+    print("cliente conectado")
+    print("cliente conectado: ",len(clientes))
+    thread=threading.Thread(target=atender_cliente,args=(conexao,endereco))
+    thread.start()
